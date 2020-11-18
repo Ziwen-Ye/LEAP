@@ -450,12 +450,15 @@ def main():
     TURN_COUNT = 1
     run_time = 1000
     VIDEO_RANDOM=0
+    #there are four arguments: trace,turn,rum,video_random
     for i in range(1, len(sys.argv)):
         if i == 1:
             traceIndex = int(sys.argv[i])
         if i == 2:
+            #seems to be the loop number
             TURN_COUNT = int(sys.argv[i])
         if i == 3:
+            #seems like, this run_time parameter is used to determinate this process
             run_time = int(sys.argv[i]) #s
         if i == 4:
             VIDEO_RANDOM = int(sys.argv[i])
@@ -468,7 +471,8 @@ def main():
     #--------------------------------------------------------------
     video_popularity_file = open("./video.txt")
     video_popularity_list = video_popularity_file.readlines()
-    video_popularity_list = [(i.split(" ")[0],float(i.split(" ")[1]),int(float(i.split(" ")[2]))) for i in video_popularity_list] #(video_name, popularity, video_tupe)
+     #(video_name, popularity, video_type)
+    video_popularity_list = [(i.split(" ")[0],float(i.split(" ")[1]),int(float(i.split(" ")[2]))) for i in video_popularity_list]
     #---------------------------------------------------------------
     for turn in range(TURN_COUNT):
         for i in range(1):
@@ -501,6 +505,9 @@ def main():
                     'video_type':[],
                     'bitrate_set':[]}
             # ---------------------------------------------------------------
+            #use the VIDEO_RANDOM to show if choose video through popularity
+            #select a video
+            #todo: the following logic of choosing random video seems not right
             if VIDEO_RANDOM:
                 video_random = random.random()
                 videoName = ""
@@ -509,6 +516,7 @@ def main():
                         videoName = video_popularity_list[i-1][0]
                         video_type = video_popularity_list[i-1][2]
                         break
+                #if not choosed a video in one whole loop, we should try again
                 if videoName == "":
                     videoName = video_popularity_list[-1][0]
                     video_type = 1
@@ -523,7 +531,6 @@ def main():
             time_now = int(time.time())
             time_local = time.localtime(time_now)
             dt = time.strftime("%Y-%m-%d_%H-%M-%S", time_local)
-            ran = random.random()
             if time_now - start_clock > run_time:
                 return
 
@@ -539,10 +546,13 @@ def main():
                   "vtype\tratelimit\thittype\tnetwork\tchainLen\tqoe\ttime\n")
 
             startTime = 0
+            #startup() start to download until to START_BUFFER_SIZE
             ifSuccess = startup()
             if ifSuccess == False:
                 return
             startupLatency = startTime
+            #seems startup() and download() both do the downloading action
+            #download() do download work after startup()
             download()
 
             csvFile.close()
